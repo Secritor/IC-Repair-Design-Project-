@@ -1,103 +1,256 @@
-/* Задания на урок:
+const sliderImg = document.querySelector(".slider__img");
+const sliderItems = Array.from(sliderImg.children);
+//---------------------------------
 
-1) Удалить все рекламные блоки со страницы (правая часть сайта)
+const btnNext = document.querySelector("#btnNext");
+const btnPrev = document.querySelector("#btnPrev");
 
-2) Изменить жанр фильма, поменять "комедия" на "драма"
+//---------------------------------
 
-3) Изменить задний фон постера с фильмом на изображение "bg.jpg". Оно лежит в папке img.
-Реализовать только при помощи JS
+const hover = document.querySelector(".slider__img__title");
+const hoverItems = Array.from(hover.children);
 
-4) Список фильмов на странице сформировать на основании данных из этого JS файла.
-Отсортировать их по алфавиту 
+//---------------------------------
 
-5) Добавить нумерацию выведенных фильмов */
+const parameters = document.querySelector("#parameters");
+const parametersItem = Array.from(parameters.children);
 
-"use strict";
+const dots = document.querySelector(".dots");
+const dotItems = Array.from(dots.children);
 
-document.addEventListener("DOMContentLoaded", () => {
-  const movieDB = {
-    movies: [
-      "Логан",
-      "Лига справедливости",
-      "Ла-ла лэнд",
-      "Одержимость",
-      "Скотт Пилигрим против...",
-    ],
-  };
+// -------------------- слайдер с изображениями
+sliderItems.forEach(function (slide, index) {
+  // console.log(slide);
 
-  const adv = document.querySelectorAll(".promo__adv img"),
-    genre = document.querySelector(".promo__genre"),
-    bg = document.querySelector(".promo__bg"),
-    movieList = document.querySelector(".promo__interactive-list"),
-    addForm = document.querySelector("form.add"),
-    addInput = addForm.querySelector(".adding__input"),
-    checkbox = addForm.querySelector('[type="checkbox"]');
+  /*скрываем все слайды кроме первого*/
+  if (index !== 0) slide.classList.add("hidden");
 
-  addForm.addEventListener("submit", (event) => {
-    event.preventDefault();
+  /*добавляем индексы*/
 
-    let newFilm = addInput.value;
-    const favorite = checkbox.checked;
+  slide.dataset.index = index;
 
-    if (newFilm) {
-      if (newFilm.length > 21) {
-        newFilm = `${newFilm.substring(0, 22)}...`;
-      }
+  // добавляем data атрибут active для первого / активного слайда
 
-      if (favorite) {
-        console.log("Добавляем любимый фильм");
-      }
+  sliderItems[0].setAttribute("data-active", "");
 
-      movieDB.movies.push(newFilm);
-      sortArr(movieDB.movies);
+  /*клик по слайду*/
 
-      createMovieLits(movieDB.movies, movieList);
-    }
-
-    event.target.reset();
+  slide.addEventListener("click", function () {
+    showNextSlide("next");
   });
-
-  const deleteAdv = (arr) => {
-    arr.forEach((item) => {
-      item.remove();
-    });
-  };
-
-  const makeChanges = () => {
-    genre.textContent = "Драма";
-
-    bg.style.backgroundImage = "url(img/bg.jpg)";
-  };
-
-  const sortArr = (arr) => {
-    arr.sort();
-  };
-
-  movieList.innerHTML = "";
-
-  movieDB.movies.sort();
-
-  function createMovieLits(films, parent) {
-    parent.innerHTML = "";
-    sortArr(films);
-    films.forEach((film, i) => {
-      parent.innerHTML += `
-                <li class="promo__interactive-item">${i + 1} ${film}
-                    <div class="delete"></div>
-                </li>
-            `;
-    });
-
-    document.querySelectorAll(".delete").forEach((btn, i) => {
-      btn.addEventListener("click", () => {
-        btn.parentElement.remove();
-        movieDB.movies.splice(i, 1);
-
-        createMovieLits(films, parent);
-      });
-    });
-  }
-  deleteAdv(adv);
-  makeChanges();
-  createMovieLits(movieDB.movies, movieList);
 });
+
+function showNextSlide(direction) {
+  // Скрываем текущий слайд
+  const currentSlide = sliderImg.querySelector("[data-active]");
+  const currentSlideIndex = +currentSlide.dataset.index;
+
+  currentSlide.classList.add("hidden");
+  currentSlide.removeAttribute("data-active");
+
+  // Рассчитываем следующий индекс в зависимости от направления движения
+  let nextSlideIndex;
+
+  if (direction === "next") {
+    nextSlideIndex =
+      currentSlideIndex + 1 === sliderItems.length ? 0 : currentSlideIndex + 1;
+  } else if (direction === "prev") {
+    nextSlideIndex =
+      currentSlideIndex === 0 ? sliderItems.length - 1 : currentSlideIndex - 1;
+  }
+
+  //Показываем следующий слайд
+  const nextSlide = sliderImg.querySelector(`[data-index="${nextSlideIndex}"]`);
+  nextSlide.classList.remove("hidden");
+  nextSlide.setAttribute("data-active", "");
+}
+
+// -------------------- слайдер с параметрами
+
+parametersItem.forEach(function (slide, index) {
+  // console.log(slide);
+
+  /*скрываем все слайды кроме первого*/
+  if (index !== 0) slide.classList.add("hidden");
+
+  /*добавляем индексы*/
+
+  slide.dataset.index = index;
+
+  // добавляем data атрибут active для первого / активного слайда
+
+  parametersItem[0].setAttribute("data-active", "");
+
+  /*клик по слайду*/
+
+  slide.addEventListener("click", function () {
+    showNextSlide("next");
+  });
+});
+
+function showNextSlidePar(direction) {
+  // Скрываем текущий слайд
+  const currentSlide = parameters.querySelector("[data-active]");
+  const currentSlideIndex = +currentSlide.dataset.index;
+
+  currentSlide.classList.add("hidden");
+  currentSlide.removeAttribute("data-active");
+
+  // Рассчитываем следующий индекс в зависимости от направления движения
+  let nextSlideIndex;
+
+  if (direction === "next") {
+    nextSlideIndex =
+      currentSlideIndex + 1 === parametersItem.length
+        ? 0
+        : currentSlideIndex + 1;
+  } else if (direction === "prev") {
+    nextSlideIndex =
+      currentSlideIndex === 0
+        ? parametersItem.length - 1
+        : currentSlideIndex - 1;
+  }
+
+  //Показываем следующий слайд
+  const nextSlide = parameters.querySelector(
+    `[data-index="${nextSlideIndex}"]`
+  );
+  nextSlide.classList.remove("hidden");
+  nextSlide.setAttribute("data-active", "");
+}
+
+// -------------------- анимация подчеркивания
+hoverItems.forEach(function (slide, index) {
+  // console.log(slide);
+
+  /*добавляем класс первому элементу*/
+  if (index == 0) slide.classList.add("active__title");
+
+  /*добавляем индексы*/
+
+  slide.dataset.index = index;
+
+  // добавляем data атрибут active для первого / активного слайда
+
+  hoverItems[0].setAttribute("data-active", "");
+
+  /*клик по слайду*/
+
+  slide.addEventListener("click", function () {
+    showNextSlide("next");
+  });
+});
+
+function showNextHover(direction) {
+  // Скрываем текущий слайд
+  const currentSlide = hover.querySelector("[data-active]");
+  const currentSlideIndex = +currentSlide.dataset.index;
+
+  currentSlide.classList.remove("active__title");
+  currentSlide.removeAttribute("data-active");
+
+  // Рассчитываем следующий индекс в зависимости от направления движения
+  let nextSlideIndex;
+
+  if (direction === "next") {
+    nextSlideIndex =
+      currentSlideIndex + 1 === hoverItems.length ? 0 : currentSlideIndex + 1;
+  } else if (direction === "prev") {
+    nextSlideIndex =
+      currentSlideIndex === 0 ? hoverItems.length - 1 : currentSlideIndex - 1;
+  }
+
+  //Показываем следующий слайд
+  const nextSlide = hover.querySelector(`[data-index="${nextSlideIndex}"]`);
+  nextSlide.classList.add("active__title");
+  nextSlide.setAttribute("data-active", "");
+}
+
+// -------------------- анимация точек
+dotItems.forEach(function (slide, index) {
+  // console.log(slide);
+
+  /*добавляем класс первому элементу*/
+  if (index == 0) slide.classList.add("active__dots");
+
+  /*добавляем индексы*/
+
+  slide.dataset.index = index;
+
+  // добавляем data атрибут active для первого / активного слайда
+
+  dotItems[0].setAttribute("data-active", "");
+
+  /*клик по слайду*/
+
+  slide.addEventListener("click", function () {
+    showNextSlide("next");
+  });
+});
+
+function showNextDots(direction) {
+  // Скрываем текущий слайд
+  const currentSlide = dots.querySelector("[data-active]");
+  const currentSlideIndex = +currentSlide.dataset.index;
+
+  currentSlide.classList.remove("active__dots");
+  currentSlide.removeAttribute("data-active");
+
+  // Рассчитываем следующий индекс в зависимости от направления движения
+  let nextSlideIndex;
+
+  if (direction === "next") {
+    nextSlideIndex =
+      currentSlideIndex + 1 === dotItems.length ? 0 : currentSlideIndex + 1;
+  } else if (direction === "prev") {
+    nextSlideIndex =
+      currentSlideIndex === 0 ? dotItems.length - 1 : currentSlideIndex - 1;
+  }
+
+  //Показываем следующий слайд
+  const nextSlide = dots.querySelector(`[data-index="${nextSlideIndex}"]`);
+  nextSlide.classList.add("active__dots");
+  nextSlide.setAttribute("data-active", "");
+}
+
+// кнопки
+
+btnNext.onclick = function () {
+  showNextDots("next");
+  showNextHover("next");
+  showNextSlidePar("next");
+  showNextSlide("next");
+};
+
+btnPrev.onclick = function () {
+  showNextDots("prev");
+  showNextHover("prev");
+  showNextSlidePar("prev");
+  showNextSlide("prev");
+};
+
+// чек боксы
+
+const box = document.querySelector("#check__box");
+const checkBox = document.querySelector("#check__data");
+
+checkBox.onclick = function () {
+  box.classList.toggle("active");
+  console.log("push");
+};
+
+const requestBox = document.querySelector(".request__check__data");
+const requestBoxItem = document.querySelector(".request__check__box");
+
+requestBox.onclick = function () {
+  requestBoxItem.classList.toggle("active");
+  console.log("push");
+};
+
+const requestBox1 = document.querySelector("#request__check__data");
+const requestBoxItem1 = document.querySelector("#request__check__box");
+
+requestBox1.onclick = function () {
+  requestBoxItem1.classList.toggle("active");
+  console.log("push");
+};
